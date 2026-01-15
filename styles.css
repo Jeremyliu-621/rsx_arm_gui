@@ -80,7 +80,7 @@ QGroupBox {
   color: #9ca3af;
   border: 2px dashed #6b7280;
   border-radius: 5px;
-  min-height: 400px;
+  min-height: 300px;
   font-size: 14px;
 }
 
@@ -90,7 +90,7 @@ QGroupBox {
   color: #a7f3d0;
   border: 2px dashed #10b981;
   border-radius: 5px;
-  min-height: 250px;
+  min-height: 300px;
   font-size: 14px;
 }
 

@@ -35,28 +35,14 @@ class MainWindow(QMainWindow):
         main_layout.setSpacing(10)
         main_layout.setContentsMargins(10, 10, 10, 10)
         
-        # Top bar: Title and Emergency Stop
+        # Top bar: Title (centered)
         top_bar = QHBoxLayout()
+        top_bar.addStretch()
         title = QLabel("RSX Arm Control System")
         title.setObjectName("title")
+        title.setAlignment(Qt.AlignCenter)
         top_bar.addWidget(title)
         top_bar.addStretch()
-        
-        # Emergency Stop
-        estop_frame = QFrame()
-        estop_frame.setObjectName("estop_frame")
-        estop_layout = QVBoxLayout(estop_frame)
-        estop_label = QLabel("🛑 EMERGENCY STOP")
-        estop_label.setObjectName("estop_label")
-        estop_label.setAlignment(Qt.AlignCenter)
-        self.estop_btn = QPushButton("E-STOP (DISARMED)")
-        self.estop_btn.setObjectName("estop_button")
-        self.estop_btn.setCheckable(True)
-        self.estop_btn.setMinimumHeight(50)
-        self.estop_btn.toggled.connect(self.on_estop)
-        estop_layout.addWidget(estop_label)
-        estop_layout.addWidget(self.estop_btn)
-        top_bar.addWidget(estop_frame)
         main_layout.addLayout(top_bar)
         
         # Main content area: Split into left (controls), center (camera), right (joint states)
@@ -94,11 +80,31 @@ class MainWindow(QMainWindow):
         angles_layout.addWidget(self.joint_angles_display)
         angles_group.setLayout(angles_layout)
         left_panel.addWidget(angles_group)
+        
+        # Emergency Stop - in left panel bottom
+        estop_frame = QFrame()
+        estop_frame.setObjectName("estop_frame")
+        estop_layout = QVBoxLayout(estop_frame)
+        estop_label = QLabel("🛑 EMERGENCY STOP")
+        estop_label.setObjectName("estop_label")
+        estop_label.setAlignment(Qt.AlignCenter)
+        self.estop_btn = QPushButton("E-STOP (DISARMED)")
+        self.estop_btn.setObjectName("estop_button")
+        self.estop_btn.setCheckable(True)
+        self.estop_btn.setMinimumHeight(50)
+        self.estop_btn.toggled.connect(self.on_estop)
+        estop_layout.addWidget(estop_label)
+        estop_layout.addWidget(self.estop_btn)
+        left_panel.addWidget(estop_frame)
+        
         left_panel.addStretch()
         content_layout.addLayout(left_panel, 1)
         
-        # Center panel: Camera feed
+        # Center panel: Camera feed and 3D view stacked
         center_panel = QVBoxLayout()
+        center_panel.setSpacing(10)
+        
+        # Live Camera Feed
         camera_group = QGroupBox("Live Camera Feed")
         camera_layout = QVBoxLayout()
         self.camera_display = QLabel("Camera feed placeholder\n(Subscribe to topic when available)")
@@ -108,6 +114,21 @@ class MainWindow(QMainWindow):
         camera_layout.addWidget(self.camera_display)
         camera_group.setLayout(camera_layout)
         center_panel.addWidget(camera_group)
+        
+        # 3D View (shown when path planning is active)
+        self.view3d_group = QGroupBox("3D Arm Visualization & Target Position")
+        self.view3d_group.setObjectName("view3d_group")
+        self.view3d_group.setVisible(False)
+        view3d_layout = QVBoxLayout()
+        self.view3d_display = QLabel("Interactive 3D view placeholder\n(Arm model and target position will be displayed here in path planning mode)")
+        self.view3d_display.setObjectName("view3d_display")
+        self.view3d_display.setAlignment(Qt.AlignCenter)
+        self.view3d_display.setMinimumWidth(500)
+        view3d_layout.addWidget(self.view3d_display)
+        self.view3d_group.setLayout(view3d_layout)
+        center_panel.addWidget(self.view3d_group)
+        
+        center_panel.addStretch()
         content_layout.addLayout(center_panel, 2)
         
         # Right panel: Joint states
@@ -124,22 +145,13 @@ class MainWindow(QMainWindow):
         content_layout.addLayout(right_panel, 1)
         main_layout.addLayout(content_layout)
         
-        # Bottom panel: 3D View (shown when path planning is active)
-        self.view3d_group = QGroupBox("3D Arm Visualization & Target Position")
-        self.view3d_group.setObjectName("view3d_group")
-        self.view3d_group.setVisible(False)
-        view3d_layout = QVBoxLayout()
-        self.view3d_display = QLabel("Interactive 3D view placeholder\n(Arm model and target position will be displayed here in path planning mode)")
-        self.view3d_display.setObjectName("view3d_display")
-        self.view3d_display.setAlignment(Qt.AlignCenter)
-        view3d_layout.addWidget(self.view3d_display)
-        self.view3d_group.setLayout(view3d_layout)
-        main_layout.addWidget(self.view3d_group)
-        
-        # Status bar
+        # Bottom bar: Status only
+        bottom_bar = QHBoxLayout()
+        bottom_bar.addStretch()
         self.status_label = QLabel("Status: Ready")
         self.status_label.setObjectName("status_label")
-        main_layout.addWidget(self.status_label)
+        bottom_bar.addWidget(self.status_label)
+        main_layout.addLayout(bottom_bar)
         
         # Load and apply external stylesheet
         stylesheet = load_stylesheet()
